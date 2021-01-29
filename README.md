@@ -39,7 +39,7 @@ A mapping of supported organism UniProt IDs to their common names is given below
   * SCHPO : Schizosaccharomyces pombe (Fission Yeast)
   * YEAST : Saccharomyces cerevisiae (Baker's Yeast)
 
-Once the networks have been processed, several BLASTP files will be saved to the directory
+Once the networks have been processed using ```network_processing.py```, several BLASTP files will be saved to the directory
 specified by the user. They will look like ```HUMAN_source1.txt```, ```MOUSE_target3.txt```, etc
 
 After locating these files, please do the following:
@@ -52,7 +52,9 @@ After locating these files, please do the following:
   * Repeat steps 4-6 with ```<organism name>_source_<m>.txt``` as the "*Subject* Sequence" and ```<organism name>_target_<n>.txt``` as the 
 	"*Subject* Sequence" (reciprocal direction)
   * Repeat steps 4-7 with each source and target file pair as needed (reccomended is at least 2 pairs, meaning 6 total BLASTP queries). Note that files with lower numbers (```source1.txt```, ```source2.txt```) on average have **more** landmarks than higher number files
-  * Run ```landmark_selection.py``` with the filepath to each pair of BLASTP results files. Note that ```landmark_selection.py``` **appends**the landmarks found in each pair to the existing ```reciprocal_best_hits.txt``` file
+  * Run ```landmark_selection.py``` with the filepath to each pair of BLASTP results files (in only one direction). Note that ```landmark_selection.py``` **appends** the landmarks found in each pair to the existing ```reciprocal_best_hits.txt``` file. 
+  * Run ```coembedding.py``` to obtain the combined embedding and target pairwise distance matrices.
+  * Run ```predict.py``` to obtain final accuracies.
 
 
 
