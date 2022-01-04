@@ -64,5 +64,11 @@ After locating these files, please do the following:
   * Run `landmark_selection.py` with the filepath to each pair of BLASTP results files (in only one direction). Note that `landmark_selection.py` *appends* the landmarks found in each pair to the existing `reciprocal_best_hits.txt` file. This calls `blast_tools.py` internally.
   * Run `coembedding.py` to obtain the combined embedding and target pairwise distance matrices. This calls `linalg.py` internally.
   * Run `predict.py` to obtain final accuracies. This calls `metrics.py` internally.
+-------
+&nbsp;
+
+### Additional Table S10 (Refer to Supplement)
+
+&nbsp;
 
   ![Additional Table S10 (Refer to Supplement)](./additional_human_mouse_inverted_fold_metrics.png)
