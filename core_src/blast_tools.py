@@ -27,21 +27,18 @@ class BlastParser():
 			query_line, hit_line = results[q_idx].lstrip().rstrip(), results[h_idx].lstrip().rstrip()
 			query_acc = ''.join(c for c in query_line[query_line.find('ref|'):].split(' ')[0] if not c.islower() and c != '|')
 			hit_info  = [val for val in hit_line.split(' ') if val]
-			hit = Hit(query_acc, *hit_info[-6:])
+			hit = Hit(query_acc, *hit_info[-7:])
 			hits.append(hit)
-		
+
 		return hits
 
 class Hit():
-	def __init__(self, q, ms, ts, qc, ev, pi, h):
+	def __init__(self, q, ms, ts, qc, ev, pi, x, h):
 		self.query = q
 		self.max_score = float(ms)
 		self.total_score = float(ts)
 		self.query_coverage = float(qc.rstrip('%'))
 		self.e_value = float(ev)
 		self.percent_id = float(pi)
-		# self.acc_len = int(acl) # some species have this, for some reason.
-		# if yours does, add this as an arg to init() and change line 30 to
-		# ... *hit_info[-7:] ...
+		self.x = x # superfluous
 		self.match = h
-		
