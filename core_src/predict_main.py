@@ -16,4 +16,4 @@ if __name__ == '__main__':
 	parser.add_argument("-r", "--run_id", help="Auto-select matrices and labels based on suffixs", type=str, required=True)
 	args = vars(parser.parse_args())
 
-	print(predict.main(args))
+	predict.main(args)
