@@ -49,16 +49,10 @@ def core(args: Dict[str, Any])-> None:
 		if verbose: print('\tComputing DSD for source network...')
 		source_dsd_matrix, sorted_source_nodes, indexed_source_nodes = dsd(source, nrw)
 
-		if verbose: print('\tCreating source pairwise distance matrix...')
-		source_d = pairwise_distance_matrix(source_dsd_matrix)
-
 	if compute != 's':
 		if verbose: print('\tComputing DSD for target network...')
 		target_dsd_matrix, sorted_target_nodes, indexed_target_nodes = dsd(target, nrw)
 
-		if verbose: print('\tCreating target pairwise distance matrix...')
-		target_d = pairwise_distance_matrix(target_dsd_matrix)
-	
 	if verbose: print('\tSaving source and target labels...')
 	save_labels(sorted_source_nodes, sorted_target_nodes, job_id, run_id, strawman_number)
 
