@@ -2,9 +2,9 @@ import typing
 import argparse
 import landmark_selection
 
-def standardize(thresh: int)-> int:
-	if thresh <= 0 : return 0
-	if 0 < thresh <= 1: return (thresh * 100)
+def standardize_threshold(thresh: int)-> int:
+	if thresh < 0 : thresh *= 0
+	if not thresh >= 1: thresh *= 100
 	return thresh
 
 if __name__ == '__main__':
@@ -16,9 +16,8 @@ if __name__ == '__main__':
 	parser.add_argument("-j", "--job_id", help="name of directory where reciprocal_best_hits file should be saved.", type=str, required=True)
 	parser.add_argument("-a", "--auto_embed", help="embed networks after parsing BLASTP files", default ='n', choices=['y','n'])
 	parser.add_argument("-v", "--verbose", help="print status updates (y/n)", type=str, nargs='?', default ='y', choices=['y','n'])
-	
+
 	args = vars(parser.parse_args())
-	args['percent_id']	   = standardize(args['percent_id'])
-	args['query_coverage'] = standardize(args['query_coverage'])
+	args['query_coverage'], args['percent_id'] = standardize_threshold(args['query_coverage']), standardize_threshold(args['percent_id'])
 
 	landmark_selection.core(args)

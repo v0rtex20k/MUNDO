@@ -2,19 +2,21 @@ import coembedding
 from utils import *
 import networkx as nx
 from blast_tools import BlastParser
-from typing import Any, Dict, Generic, List, NewType, Tuple, Set
+from typing import Any, Callable, Dict, List, NewType, Tuple, Set
 
 Graph = NewType('nx Graph', nx.Graph)
-Hit = NewType('Hit object defined in blast_tools.py', Generic)
+Hit = NewType('Hit object defined in blast_tools.py', Callable)
+
+def meets_threshold(hit: Hit, query_coverage: float, percent_id: float)-> bool:
+	return True if (hit.query_coverage >= query_coverage and hit.percent_id >= percent_id) else False
 
 def get_best_hits(filepath: str, query_coverage: float, percent_id: float)-> Dict[str, str]:
 	best_hits = dict()
 	hits = BlastParser(filepath)._hits
 
 	for hit in hits:
-		if hit.query_coverage >= query_coverage and hit.percent_id >= percent_id:
+		if meets_threshold(hit, query_coverage, percent_id):
 			best_hits[hit.query] = hit.match
-
 	return best_hits
 
 def add_reciprocal_best_hits(source_file: str, target_file: str, query_coverage: float, percent_id: float)-> Set[Tuple[str,str]]:
@@ -55,7 +57,7 @@ def core(args: Dict[str, Any])-> None:
 	if verbose: print(f"\t{n_rbh} reciprocal best hits have been identified so far.\n\t\t~ Expanding ~", flush=True)
 	reciprocal_best_hits = add_reciprocal_best_hits(source_blast_file, target_blast_file, query_coverage, percent_id)
 	save_reciprocal_best_hits(reciprocal_best_hits, job_id)
-	
+
 	if verbose: print(f"A total of {n_rbh + len(reciprocal_best_hits)} reciprocal best hits now exist in {job_id}/reciprocal_best_hits.txt")
 
 	if args['auto_embed'] == 'y':
