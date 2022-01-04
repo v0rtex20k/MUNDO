@@ -1,6 +1,6 @@
 # **MUNDO**: Protein Function Prediction Embedded in a Multi-species World 
 
-## Authors:
+### Authors:
 - Victor Arsenescu
 - Kapil Devkota
 - Mert Erden
