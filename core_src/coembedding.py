@@ -29,18 +29,18 @@ def load_reciprocal_best_hits(job_id: str)-> Set[Tuple[str, str]]:
 def unpickled_networks(job_id: str)-> Tuple[Graph, Graph]:
 	pickled_files = glob(f"{job_id}/*.gpickle")
 	if len(pickled_files) != 2: print(f"[COEMBEDDING ERROR] Expected exactly two pickled networks in \"{job_id}\" directory"); exit()
-	
+
 	source_file_idx = [i for i,file in enumerate(pickled_files) if ('source' in file and 'target' not in file)][0] # glob finds the pickled
 	target_file_idx = [i for i,file in enumerate(pickled_files) if ('target' in file and 'source' not in file)][0] # in no particular order
-	
+
 	networks = [nx.read_gpickle(file) for file in pickled_files]
-	
+
 	return networks[source_file_idx], networks[target_file_idx]
 
 def save_labels(source_labels: List[str], target_labels: List[str], run_id: str, job_id: str)-> None:
 	with open(f"{job_id}/source_labels{run_id}.json", 'w') as sptr:
 		json.dump({i:node for i,node in enumerate(source_labels)}, sptr)
-	
+
 	with open(f"{job_id}/target_labels{run_id}.json", 'w') as tptr:
 		json.dump({i:node for i,node in enumerate(target_labels)}, tptr)
 
@@ -56,17 +56,17 @@ def embed_network(network: Graph, nrw: int)-> Tuple[ndarray, List[str], Dict[str
 		adj_matrix = nx.to_numpy_matrix(network, nodelist=sorted_nodelist)
 		dsd_matrix = turbo_dsd(adj_matrix, nrw)
 		return dsd_matrix, sorted_nodelist, indexed_nodes
-	
+
 	return sorted_nodelist, indexed_nodes
 
 def coembed_networks(source_dsd: ndarray, target_dsd: ndarray, landmark_indices: List[Tuple[int, int]], verbose: bool)-> ndarray:
 
 	if verbose: print('\tComputing RKHS for source network... ')
 	source_rkhs = rkhs(source_dsd)
-	
+
 	if verbose: print('\tEmbedding matrices... ')
 	target_rkhs_hat = embed_matrices(source_rkhs, target_dsd, landmark_indices)
-	
+
 	if verbose: print('\tCreating final munk matrix... ')
 	munk_matrix = np.dot(source_rkhs, target_rkhs_hat.T)
 
@@ -82,7 +82,7 @@ def core(args: Dict[str, Any])-> None:
 
 	verbose, normalized = boolify(args, 'verbose'), boolify(args, 'normalized')
 
-	source_dsd_matrix, target_dsd_matrix= None, None
+	source_dsd_matrix, target_dsd_matrix = None, None
 
 	if verbose: print('\tRetrieving pickled networks...', flush=True)
 	source, target = unpickled_networks(job_id)
@@ -109,13 +109,8 @@ def core(args: Dict[str, Any])-> None:
 		if verbose: print('\tIndexing landmarks...')
 		landmark_indices = index_landmarks(indexed_source_nodes, indexed_target_nodes, reciprocal_best_hits)
 
-		if verbose: print('\tMaking source DSD matrix hermitian...')
-		s_hermit = make_hermitian(source_dsd_matrix, gamma, thresh)
-		if verbose: print('\tMaking target DSD matrix hermitian...')
-		t_hermit = make_hermitian(target_dsd_matrix, gamma, thresh)
-
 		if verbose: print('\tCombedding networks...')
-		munk_matrix = coembed_networks(s_hermit, t_hermit, landmark_indices, verbose)
+		munk_matrix = coembed_networks(source_dsd_matrix, target_dsd_matrix, landmark_indices, verbose)
 
 
 	if verbose: print('\tSaving row and column labels...')
@@ -128,7 +123,7 @@ def core(args: Dict[str, Any])-> None:
 	if compute != 'm': # all, both, dsd only
 		if verbose: print('\tSaving target dsd matrix...')
 		np.save(f"{job_id}/target_dsd_matrix{run_id}", target_dsd_matrix)
-	
+
 	if compute != 'd': # all, both, combined
 		if verbose: print('\tSaving munk matrix...')
 		np.save(f"{job_id}/munk_matrix{run_id}", munk_matrix)
