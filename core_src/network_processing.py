@@ -1,5 +1,4 @@
 import json
-import isorank
 from utils import *
 import networkx as nx
 from itertools import chain
@@ -106,11 +105,6 @@ def core(args: Dict[str, Any])-> Tuple[Graph, Graph]:
 
 	src_proteins = [node for node, degree in sorted(source.degree, key=lambda x: x[1], reverse=True)]
 	tgt_proteins = [node for node, degree in sorted(target.degree, key=lambda x: x[1], reverse=True)]
-
-	isorank.save(source, source_org, "source", job_id, True)
-	isorank.save(target, target_org, "target", job_id, True)
-
-	exit()
 
 	if verbose: print("\tSaving proteins and refseq-uniprot mappings...")
 	save_proteins(src_proteins, source_org, "source", job_id, verbose)
